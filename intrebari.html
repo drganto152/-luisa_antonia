@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@luisa_antonia – Test d’Orientation</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif;}
+    body{background:#0f2027;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+    /* NAVBAR */
+    .navbar{background:rgba(0,0,0,.7);padding:1rem 2rem;backdrop-filter:blur(10px);position:sticky;top:0;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,.3);}
+    .nav-wrap{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:auto;}
+    .logo{font-size:1.8rem;font-weight:bold;color:#00d4ff;text-shadow:0 0 10px rgba(0,212,255,.5);}
+    .lang-wrap{display:flex;gap:.8rem;}
+    .lang-btn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:.5rem 1.2rem;border-radius:30px;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .3s;}
+    .lang-btn.active{background:#00d4ff;color:#1e3c72;font-weight:bold;box-shadow:0 0 15px rgba(0,212,255,.6);}
+    .lang-btn:hover:not(.active){background:rgba(255,255,255,.3);transform:translateY(-2px);}
+
+    /* MAIN */
+    .main{flex:1;padding:20px;display:flex;flex-direction:column;align-items:center;}
+    .container{max-width:900px;width:100%;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border-radius:16px;padding:30px;box-shadow:0 15px 35px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);}
+    .header{display:flex;justify-content:center;align-items:center;margin-bottom:25px;}
+    .question{margin:25px 0;font-size:1.4rem;font-weight:600;color:#fff;text-align:center;}
+    .options{margin:20px 0;display:grid;gap:12px;}
+    .option{display:flex;align-items:center;padding:14px;border-radius:12px;background:rgba(255,255,255,.1);cursor:pointer;transition:all .3s;border:2px solid transparent;}
+    .option:hover{background:rgba(0,212,255,.2);border-color:#00d4ff;}
+    .option input{margin-right:12px;transform:scale(1.3);}
+    .option label{flex:1;cursor:pointer;}
+    .btn-group{margin-top:30px;display:flex;gap:15px;justify-content:center;flex-wrap:wrap;}
+    .btn{background:#00d4ff;color:#fff;border:none;padding:14px 28px;border-radius:50px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:all .3s;box-shadow:0 6px 15px rgba(0,212,255,.4);}
+    .btn:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(0,212,255,.6);}
+    .btn:disabled{opacity:0.6;cursor:not-allowed;}
+    .result{margin-top:30px;padding:30px;background:rgba(0,0,0,.3);border-radius:16px;text-align:center;display:none;}
+    .result h2{font-size:2.5rem;margin-bottom:15px;color:#00d4ff;}
+    .result .academy{font-size:2rem;margin:20px 0;color:#ffcc00;font-weight:bold;}
+    .result p{font-size:1.2rem;margin:10px 0;}
+    @media(max-width:768px){
+      .logo{font-size:1.5rem;}
+      .lang-btn{padding:.4rem 1rem;font-size:.8rem;}
+      .header{flex-direction:column;text-align:center;}
+      .question{font-size:1.2rem;}
+      .btn-group{flex-direction:column;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-wrap">
+      <div class="logo">@luisa_antonia</div>
+      <div class="lang-wrap">
+        <button class="lang-btn active" data-lang="fr">Française🥰</button>
+        <button class="lang-btn"        data-lang="ro">Română😫</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="container">
+      <div class="header">
+        <div id="question-counter">Question <span id="current">1</span> / 24</div>
+      </div>
+
+      <div id="question-container">
+        <div class="question" id="question-text"></div>
+        <div class="options" id="options"></div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn" id="prev-btn">Précédent</button>
+        <button class="btn" id="next-btn">Suivant</button>
+        <button class="btn" id="submit-btn" style="display:none;">Terminer</button>
+      </div>
+
+      <div class="result" id="result">
+        <h2 id="result-title">Test terminé !</h2>
+        <div class="academy" id="academy-name"></div>
+        <p id="academy-desc"></p>
+        <div id="scores"></div>
+        <button class="btn" onclick="window.close()">Fermer la fenêtre</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       TOATE TEXTELE + TRADUCERI – MODIFICĂ DOAR AICI
+       ========================================================== -->
+  <script>
+    const txt = {
+      fr: {
+        questionCounter: "Question {n} / 24",
+        prev: "Précédent",
+        next: "Suivant",
+        submit: "Terminer",
+        resultTitle: "Test terminé !",
+        close: "Fermer la fenêtre",
+        scale: ["Pas du tout", "Peu", "Moyennement", "Beaucoup", "Énormément"],
+        academies: {
+          AFA: { name: "Académie des Forces Aériennes", desc: "Tu as un profil très adapté à l'Académie des Forces Aériennes, tu es calme, déterminé et capable de prendre des décisions sous pression." },
+          ATM: { name: "Académie Technique Militaire", desc: "Tu as un profil très adapté à l'Académie Technique Militaire ; tu es logique, organisé et attentif aux détails." },
+          AFN: { name: "Académie des Forces Navales", desc: "Ton profil correspond très bien à l'Académie Navale ; tu t'adaptes facilement aux règles strictes et au travail en équipe." },
+          AFT: { name: "Académie des Forces Terrestres", desc: "Ton profil correspond très bien aux Forces Terrestres ; tu as l'esprit de commandement, du courage et de la responsabilité." }
+        },
+        questions: [
+          "Je peux rester calme même dans les situations les plus tendues.",
+          "Je suis une personne très organisée et attentive aux détails.",
+          "L'isolement ou les longues périodes loin de chez moi ne me dérangent pas.",
+          "Je n'abandonne pas facilement, même si la situation est difficile.",
+          "Le stress ne m'affecte pas de manière significative.",
+          "J'aime résoudre des problèmes logiques et techniques.",
+          "Je travaille bien en équipe et je soutiens mon équipe.",
+          "Je me sens responsable de la sécurité de ceux qui m'entourent.",
+          "Face à un échec, j'analyse calmement et j'apprends de mes erreurs.",
+          "Je trouve une solution efficace quand quelque chose ne fonctionne pas.",
+          "Je m'en sors bien dans des environnements avec des règles strictes.",
+          "Le courage est l'une de mes principales qualités.",
+          "Je préfère avoir toujours le contrôle de la situation.",
+          "Je préfère comprendre parfaitement les instructions avant d'agir.",
+          "Je m'adapte rapidement à des conditions de vie difficiles.",
+          "Je me sens à l'aise quand je dois suivre des ordres clairs.",
+          "J'aime prendre des décisions rapidement, sans trop hésiter.",
+          "J'ai la patience de répéter un processus jusqu'à ce que je réussisse.",
+          "Je garde mon calme face aux dangers.",
+          "Je me soucie du bien-être et du moral de mon équipe.",
+          "Je prends des risques quand je sais que je peux obtenir des résultats importants.",
+          "La pensée logique est l'un de mes points forts.",
+          "La loyauté envers l'équipe est une valeur essentielle pour moi.",
+          "Je suis motivé par l'idée d'honneur et de devoir."
+        ]
+      },
+      ro: {
+        questionCounter: "Întrebarea {n} / 24",
+        prev: "Înapoi",
+        next: "Următoarea",
+        submit: "Finalizează",
+        resultTitle: "Test finalizat!",
+        close: "Închide fereastra",
+        scale: ["Deloc", "Puțin", "Mediu", "Mult", "Foarte mult"],
+        academies: {
+          AFA: { name: "Academia Forțelor Aeriene", desc: "Ai un profil foarte potrivit pentru Academia Forțelor Aeriene, ești calm, hotărât și capabil să iei decizii sub presiune." },
+          ATM: { name: "Academia Tehnică Militară", desc: "Ai un profil foarte potrivit pentru Academia Tehnică Militară; ești logic, organizat și atent la detalii." },
+          AFN: { name: "Academia Forțelor Navale", desc: "Profilul tău se potrivește foarte bine Academiei Navale; te adaptezi ușor la reguli stricte și echipă." },
+          AFT: { name: "Academia Forțelor Terestre", desc: "Profilul tău se potrivește foarte bine Forțelor Terestre; ai spirit de comandă, curaj și responsabilitate." }
+        },
+        questions: [
+          "Pot rămâne calm chiar și în cele mai tensionate situații.",
+          "Sunt o persoană foarte organizată și atentă la detalii.",
+          "Nu mă deranjează izolarea sau perioadele lungi departe de casă.",
+          "Nu renunț ușor, chiar dacă situația e dificilă.",
+          "Stresul nu mă afectează semnificativ.",
+          "Îmi place să rezolv probleme logice și tehnice.",
+          "Lucrez bine în colectiv și îmi susțin echipa.",
+          "Mă simt responsabil pentru siguranța celor din jurul meu.",
+          "În fața unui eșec analizez calm si învăț din greșeli.",
+          "Găsesc o soluție eficientă când ceva nu funcționează.",
+          "Mă descurc bine în medii cu reguli stricte.",
+          "Curajul este una dintre calitățile mele principale.",
+          "Prefer să am tot timpul control asupra situației.",
+          "Prefer să înțeleg perfect instrucțiunile înainte de a acționa.",
+          "Mă pot adapta rapid la condiții dificile de trai.",
+          "Mă simt confortabil când trebuie să respect ordine clare.",
+          "Îmi place să iau decizii rapid,fără să ezit prea mult.",
+          "Am răbdare să repet un proces până reușesc.",
+          "Îmi mențin calmul în fața pericolelor.",
+          "Îmi pasă de bunăstarea și moralul celor din echipa mea.",
+          "Îmi asum riscuri atunci când știu că pot obține rezultate importante.",
+          "Gândirea logică este unul dintre punctele mele forte.",
+          "Loialitatea față de echipă este o valoare esențială pentru mine.",
+          "Mă simt motivat de ideea de onoare și datorie."
+        ]
+      }
+    };
+
+    // === GRUPURI PENTRU SCOR ===
+    const groups = {
+      AFA: [0, 4, 8, 12, 16, 20],   // 1,5,9,13,17,21
+      ATM: [1, 5, 9, 13, 17, 21],   // 2,6,10,14,18,22
+      AFN: [2, 6, 10, 14, 18, 22],  // 3,7,11,15,19,23
+      AFT: [3, 7, 11, 15, 19, 23]   // 4,8,12,16,20,24
+    };
+
+    let currentLang = 'fr';  // ← FRANCEZĂ PRIMA!
+    let current = 0;
+    let answers = new Array(24).fill(null);
+
+    const els = {
+      counter: document.getElementById('question-counter'),
+      currentQ: document.getElementById('current'),
+      question: document.getElementById('question-text'),
+      options: document.getElementById('options'),
+      prev: document.getElementById('prev-btn'),
+      next: document.getElementById('next-btn'),
+      submit: document.getElementById('submit-btn'),
+      result: document.getElementById('result'),
+      academyName: document.getElementById('academy-name'),
+      academyDesc: document.getElementById('academy-desc'),
+      scores: document.getElementById('scores')
+    };
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+      document.documentElement.lang = lang;
+      loadQuestion();
+      updateButtons();
+    }
+
+    function loadQuestion() {
+      const q = txt[currentLang].questions[current];
+      els.question.textContent = `${current + 1}. ${q}`;
+      els.currentQ.textContent = current + 1;
+      els.counter.innerHTML = txt[currentLang].questionCounter.replace('{n}', current + 1);
+
+      els.options.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const div = document.createElement('div');
+        div.className = 'option';
+        const checked = answers[current] === i ? 'checked' : '';
+        div.innerHTML = `
+          <input type="radio" name="q${current}" value="${i}" id="opt${i}" ${checked}>
+          <label for="opt${i}">${i} - ${txt[currentLang].scale[i-1]}</label>
+        `;
+        div.onclick = () => {
+          answers[current] = i;
+          loadQuestion();
+        };
+        els.options.appendChild(div);
+      }
+      updateButtons();
+    }
+
+    function updateButtons() {
+      els.prev.disabled = current === 0;
+      els.prev.textContent = txt[currentLang].prev;
+      els.next.textContent = current === 23 ? txt[currentLang].submit : txt[currentLang].next;
+      els.submit.style.display = current === 23 ? 'inline-block' : 'none';
+      els.next.style.display = current === 23 ? 'none' : 'inline-block';
+    }
+
+    function next() { if (current < 23) { current++; loadQuestion(); } }
+    function prev() { if (current > 0) { current--; loadQuestion(); } }
+
+    function submitTest() {
+      const scores = { AFA: 0, ATM: 0, AFN: 0, AFT: 0 };
+      Object.keys(groups).forEach(group => {
+        groups[group].forEach(idx => {
+          if (answers[idx] !== null) scores[group] += answers[idx];
+        });
+      });
+
+      const max = Math.max(...Object.values(scores));
+      const winner = Object.keys(scores).find(k => scores[k] === max);
+
+      document.getElementById('question-container').style.display = 'none';
+      document.querySelector('.btn-group').style.display = 'none';
+      els.result.style.display = 'block';
+
+      els.result.querySelector('h2').textContent = txt[currentLang].resultTitle;
+      els.academyName.textContent = txt[currentLang].academies[winner].name;
+      els.academyDesc.textContent = txt[currentLang].academies[winner].desc;
+
+      let html = "<p><strong>Tes scores :</strong></p>";
+      if (currentLang === 'ro') html = "<p><strong>Scorurile tale:</strong></p>";
+      Object.keys(scores).forEach(k => {
+        const short = txt[currentLang].academies[k].name.split(" ").slice(1).join(" ");
+        html += `<p>${short}: <strong>${scores[k]}</strong> points</p>`;
+        if (currentLang === 'ro') html = html.replace("points", "puncte");
+      });
+      els.scores.innerHTML = html;
+
+      document.querySelector('#result .btn').textContent = txt[currentLang].close;
+    }
+
+    // === EVENIMENTE ===
+    document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+    els.prev.addEventListener('click', prev);
+    els.next.addEventListener('click', next);
+    els.submit.addEventListener('click', submitTest);
+
+    // === PORNIRE ÎN FRANCEZĂ ===
+    window.onload = () => {
+      setLang('fr');
+      loadQuestion();
+    };
+  </script>
+</body>
+</html>

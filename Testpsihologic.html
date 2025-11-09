@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@luisa_antonia – Test d’Orientation</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif;}
+    body{background:#0f2027;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+    /* NAVBAR – IDENTIC CU intrebari.html */
+    .navbar{background:rgba(0,0,0,.7);padding:1rem 2rem;backdrop-filter:blur(10px);position:sticky;top:0;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,.3);}
+    .nav-wrap{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:auto;}
+    .logo{font-size:1.8rem;font-weight:bold;color:#00d4ff;text-shadow:0 0 10px rgba(0,212,255,.5);}
+    .lang-wrap{display:flex;gap:.8rem;}
+    .lang-btn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:.5rem 1.2rem;border-radius:30px;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .3s;}
+    .lang-btn.active{background:#00d4ff;color:#1e3c72;font-weight:bold;box-shadow:0 0 15px rgba(0,212,255,.6);}
+    .lang-btn:hover:not(.active){background:rgba(255,255,255,.3);transform:translateY(-2px);}
+
+    /* MAIN – IDENTIC CU intrebari.html */
+    .main{flex:1;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .container{max-width:900px;width:100%;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border-radius:16px;padding:40px;box-shadow:0 15px 35px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);text-align:center;}
+    .title{font-size:2.5rem;margin-bottom:20px;color:#fff;font-weight:600;}
+    .quote{font-style:italic;margin:20px 0 10px;color:#e0f7fa;font-size:1.3rem;}
+    .author{font-weight:bold;color:#00d4ff;margin-bottom:25px;font-size:1.1rem;}
+    .instructions{font-size:1.1rem;line-height:1.8;color:#e0f7fa;margin:25px 0;text-align:left;}
+    .instructions ul{margin-left:20px;}
+    .instructions li{margin:8px 0;}
+    .start-btn{background:#00d4ff;color:#fff;border:none;padding:16px 32px;border-radius:50px;font-size:1.2rem;font-weight:bold;cursor:pointer;transition:all .3s;box-shadow:0 6px 15px rgba(0,212,255,.4);margin-top:20px;}
+    .start-btn:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(0,212,255,.6);}
+    footer{text-align:center;padding:20px;font-size:.9rem;color:#aaa;background:rgba(0,0,0,.3);}
+
+    @media(max-width:768px){
+      .logo{font-size:1.5rem;}
+      .lang-btn{padding:.4rem 1rem;font-size:.8rem;}
+      .container{padding:25px;}
+      .title{font-size:2rem;}
+      .quote{font-size:1.1rem;}
+      .instructions{font-size:1rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-wrap">
+      <div class="logo">@luisa_antonia</div>
+      <div class="lang-wrap">
+        <button class="lang-btn"        data-lang="ro">Română😫</button>
+        <button class="lang-btn active" data-lang="fr">Française🥰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="container">
+      <h1 class="title" id="title"></h1>
+      <p class="quote" id="quote"></p>
+      <p class="author" id="author"></p>
+      <hr style="margin:25px 0;border:1px solid rgba(255,255,255,.2);">
+      <div class="instructions" id="instructions"></div>
+      <button class="start-btn" id="start-btn"></button>
+    </div>
+  </div>
+
+  <footer id="footer"></footer>
+
+  <!-- ==========================================================
+       TOATE TEXTELE + TRADUCERI – MODIFICĂ DOAR AICI
+       ========================================================== -->
+  <script>
+    const txt = {
+      fr: {
+        title: "Test d’Orientation Militaire",
+        quote: '"Choisis ton chemin avec sagesse."',
+        author: "— Sun Tzu",
+        instructions: `
+          <p><strong>Instructions :</strong></p>
+          <ul>
+            <li>Lis attentivement chaque affirmation.</li>
+            <li>Choisis le degré qui te correspond (1 = Pas du tout → 5 = Énormément).</li>
+            <li>Le test comporte <strong>24 questions</strong> et n’a pas de limite de temps.</li>
+            <li>À la fin, tu recevras l’académie militaire la plus adaptée pour toi.</li>
+          </ul>`,
+        startBtn: "Commencer le Test",
+        footer: "© 2025 @luisa_antonia | Test psychologique pour l’orientation militaire"
+      },
+      ro: {
+        title: "Test de Orientare Militară",
+        quote: '"Alege-ți drumul cu înțelepciune."',
+        author: "— Sun Tzu",
+        instructions: `
+          <p><strong>Instrucțiuni:</strong></p>
+          <ul>
+            <li>Citește cu atenție fiecare afirmație.</li>
+            <li>Alege gradul care te reprezintă (1 = Deloc → 5 = Foarte mult).</li>
+            <li>Testul are <strong>24 de întrebări</strong> și nu are limită de timp.</li>
+            <li>La final, vei primi academia militară cea mai potrivită pentru tine.</li>
+          </ul>`,
+        startBtn: "Începe Testul",
+        footer: "© 2025 @luisa_antonia | Test psihologic pentru orientare în cariera militară"
+      }
+    };
+
+    const els = {
+      title: document.getElementById('title'),
+      quote: document.getElementById('quote'),
+      author: document.getElementById('author'),
+      instructions: document.getElementById('instructions'),
+      startBtn: document.getElementById('start-btn'),
+      footer: document.getElementById('footer')
+    };
+
+    function setLang(lang) {
+      const t = txt[lang];
+      els.title.textContent = t.title;
+      els.quote.textContent = t.quote;
+      els.author.textContent = t.author;
+      els.instructions.innerHTML = t.instructions;
+      els.startBtn.textContent = t.startBtn;
+      els.footer.textContent = t.footer;
+
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === lang);
+      });
+
+      document.documentElement.lang = lang;
+    }
+
+    // Deschide testul într-o fereastră nouă
+    els.startBtn.addEventListener('click', () => {
+      window.open('intrebari.html', '_blank', 'width=950,height=720,resizable=yes,scrollbars=yes');
+    });
+
+    // Limbă
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => setLang(btn.dataset.lang));
+    });
+
+    // PORNIRE ÎN FRANCEZĂ
+    window.onload = () => setLang('fr');
+  </script>
+</body>
+</html>
